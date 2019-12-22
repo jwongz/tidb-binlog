@@ -100,6 +100,29 @@ func (r *EtcdRegistry) UpdateNode(pctx context.Context, prefix string, status *S
 	}
 }
 
+// DeleteNode delete the node.
+func (r *EtcdRegistry) DeleteNode(pctx context.Context, prefix string, status *Status) error {
+	ctx, cancel := context.WithTimeout(pctx, r.reqTimeout)
+	defer cancel()
+
+	if exists, err := r.checkNodeExists(ctx, prefix, status.NodeID); err != nil {
+		return errors.Trace(err)
+	} else if !exists {
+		// not found then return nil
+		log.Info("node dosen't exist", zap.String("id", status.NodeID))
+		return nil
+	} else {
+		// found it, delete the node
+		return r.deleteNode(ctx, prefix, status)
+	}
+}
+
+func (r *EtcdRegistry) deleteNode(ctx context.Context, prefix string, status *Status) error {
+	key := r.prefixed(prefix, status.NodeID)
+	err := r.client.Delete(ctx, key, true)
+	return errors.Trace(err)
+}
+
 func (r *EtcdRegistry) checkNodeExists(ctx context.Context, prefix, nodeID string) (bool, error) {
 	_, err := r.client.Get(ctx, r.prefixed(prefix, nodeID))
 	if err != nil {

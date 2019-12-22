@@ -60,6 +60,10 @@ func main() {
 		err = ctl.ApplyAction(cfg.EtcdURLs, node.PumpNode, cfg.NodeID, close)
 	case ctl.OfflineDrainer:
 		err = ctl.ApplyAction(cfg.EtcdURLs, node.DrainerNode, cfg.NodeID, close)
+	case ctl.DeletePump:
+		err = ctl.DeleteNode(cfg.EtcdURLs, node.PumpNode, cfg.NodeID)
+	case ctl.DeleteDrainer:
+		err = ctl.DeleteNode(cfg.EtcdURLs, node.DrainerNode, cfg.NodeID)
 	default:
 		err = errors.NotSupportedf("cmd %s", cfg.Command)
 	}

@@ -58,6 +58,12 @@ const (
 
 	// OfflineDrainer is comamnd used for offlien drainer.
 	OfflineDrainer = "offline-drainer"
+
+	// DeletePump is command used for delete pump.
+	DeletePump = "delete-pump"
+
+	// DeleteDrainer is command used for delete drainer.
+	DeleteDrainer = "delete-drainer"
 )
 
 // Config holds the configuration of drainer
