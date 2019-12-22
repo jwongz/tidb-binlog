@@ -80,6 +80,29 @@ func UpdateNodeState(urls, kind, nodeID, state string) error {
 	}
 }
 
+// DeleteNode delete pump or drainer.
+func DeleteNode(urls, kind, nodeID string) error {
+	/*
+		delete node when node's state is offline.
+	*/
+	registry, err := createRegistryFuc(urls)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	n, err := registry.Node(context.Background(), node.NodePrefix[kind], nodeID)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	switch n.State {
+	case node.Offline:
+		return registry.DeleteNode(context.Background(), node.NodePrefix[kind], n)
+	default:
+		return errors.Errorf("node state should be offline")
+	}
+}
+
 // createRegistry returns an ectd registry
 func createRegistry(urls string) (*node.EtcdRegistry, error) {
 	ectdEndpoints, err := flags.ParseHostPortAddr(urls)
